@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/step-ca
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/electrs
 
 jobs:
   docker:
