@@ -34,19 +34,13 @@ LABEL org.opencontainers.image.source="https://github.com/romanz/electrs" \
 
 COPY --from=builder /usr/local/cargo/bin/electrs /usr/local/bin/electrs
 
-# Writable by any UID (sticky bit), so `--user` works at runtime
 RUN mkdir /data && chmod 1777 /data
 ENV HOME=/data
 WORKDIR /data
 VOLUME /data
 
-# Non-root default; override with `--user` / compose `user:`
 USER 1000:1000
-
-# Electrum RPC
 EXPOSE 50001
-# Prometheus monitoring
-EXPOSE 4224
 
 STOPSIGNAL SIGINT
 ENTRYPOINT ["electrs"]
