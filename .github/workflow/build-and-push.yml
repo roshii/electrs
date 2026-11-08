@@ -29,8 +29,10 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            VERSION=${{ vars.ELECTRS_VERSION }}
           tags: |
             ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.TAG }}
+            ${{ env.IMAGE_NAME }}:${{ vars.ELECTRS_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
