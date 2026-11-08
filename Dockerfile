@@ -16,13 +16,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ADD https://github.com/romanz/electrs.git#${VERSION} .
 
-# Avoids huge RAM usage when building under QEMU (ARM)
-# https://users.rust-lang.org/t/cargo-uses-too-much-memory-being-run-in-qemu/76531/2
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry \
+RUN --mount=type=cache,target=/build/target \
+    --mount=type=cache,target=/usr/local/cargo/registry \
     --mount=type=cache,target=/usr/local/cargo/git \
-    cargo install --locked --path .
+    cargo build --release --locked \
+ && cp target/release/electrs /usr/local/bin/electrs
 
 
 FROM debian:trixie-slim
@@ -32,7 +32,7 @@ LABEL org.opencontainers.image.source="https://github.com/romanz/electrs" \
       org.opencontainers.image.title="electrs" \
       org.opencontainers.image.version="${VERSION}"
 
-COPY --from=builder /usr/local/cargo/bin/electrs /usr/local/bin/electrs
+COPY --from=builder /usr/local/bin/electrs /usr/local/bin/electrs
 
 RUN mkdir /data && chmod 1777 /data
 ENV HOME=/data
@@ -40,7 +40,6 @@ WORKDIR /data
 VOLUME /data
 
 USER 1000:1000
-EXPOSE 50001
 
 STOPSIGNAL SIGINT
 ENTRYPOINT ["electrs"]
